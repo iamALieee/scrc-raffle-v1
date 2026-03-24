@@ -416,14 +416,17 @@ function PrizeIllustration({
   );
 }
 
+/** Offset from wheel center toward rim; tuned for the original 560px wheel (216/560 ≈ 0.386). */
+const SEGMENT_LABEL_OFFSET_CQW = 38.57;
+
 function SegmentLabel({ segment, wheelTextSize }: { segment: WheelSegment; wheelTextSize: number }) {
   return (
     <div className="absolute left-1/2 top-1/2 z-10" style={{ transform: `translate(-50%, -50%) rotate(${segment.midAngle + 90}deg)` }}>
       <div
-        className="flex w-[128px] items-center justify-center text-center font-black uppercase tracking-[0.05em] md:w-[146px]"
+        className="flex max-w-[min(9.125rem,26cqw)] items-center justify-center text-center font-black uppercase tracking-[0.05em]"
         style={{
-          transform: "translateY(-216px)",
-          minHeight: "68px",
+          transform: `translateY(calc(-1 * ${SEGMENT_LABEL_OFFSET_CQW} * 1cqw))`,
+          minHeight: "min(4.25rem, 12cqw)",
           lineHeight: 1.03,
           color: segment.textColor,
           textShadow: segment.value === "Hershey's Bar" ? "0 1px 0 rgba(255,255,255,0.12)" : "0 1px 0 rgba(255,255,255,0.45)",
@@ -432,7 +435,10 @@ function SegmentLabel({ segment, wheelTextSize }: { segment: WheelSegment; wheel
       >
         <div className="space-y-0.5">
           {labelLines(segment.label).map((line) => (
-            <div key={`${segment.value}-${line}`} style={{ fontSize: `${wheelTextSize}px` }}>
+            <div
+              key={`${segment.value}-${line}`}
+              style={{ fontSize: `clamp(9px, 2.75cqw, ${wheelTextSize}px)` }}
+            >
               {line}
             </div>
           ))}
@@ -518,30 +524,48 @@ function WheelVisual({
   wheelTextSize: number;
 }) {
   return (
-    <div className="relative mx-auto flex w-full max-w-[760px] items-center justify-center">
-      <div className="absolute -top-4 z-40 h-0 w-0 border-l-6 border-r-6 border-b-10 border-l-transparent border-r-transparent border-b-orange-600 drop-shadow-lg" />
-      <motion.div animate={{ rotate: wheelRotation }} transition={isSpinning ? { duration: 4.1, ease: [0.16, 0.86, 0.18, 1] } : { duration: 0 }} className="relative h-[560px] w-[560px] rounded-full border-4 border-white shadow-2xl ring-4 ring-orange-200 md:h-[680px] md:w-[680px]">
-        <div className="absolute inset-0 overflow-hidden rounded-full bg-[radial-gradient(circle_at_center,#fff7ed_0%,#fed7aa_40%,#fdba74_82%,#fb923c_100%)]">
-          {segments.map((segment) => (
-            <React.Fragment key={segment.value}>
-              <div className="absolute inset-0" style={{ ...gradientStyle(segment.startColor, segment.endColor, segment.isDepleted ? 0.2 : 1), clipPath: segmentPolygon(segment.startAngle, segment.endAngle, 50, 24) }} />
-              <SegmentLabel segment={segment} wheelTextSize={wheelTextSize} />
-            </React.Fragment>
-          ))}
-          <div className="absolute inset-0 rounded-full border-2 border-white/35" />
-          <div className="absolute inset-[12%] rounded-full border border-orange-100/40" />
-          <div className="absolute inset-[24%] rounded-full border border-white/20" />
+    <div className="relative mx-auto w-full max-w-[760px]">
+      <div className="relative mx-auto aspect-square w-full max-w-[560px] shrink-0 md:max-w-[680px]">
+        <div className="absolute -top-3 left-1/2 z-40 h-0 w-0 -translate-x-1/2 border-l-[6px] border-r-[6px] border-b-[10px] border-l-transparent border-r-transparent border-b-orange-600 drop-shadow-lg md:-top-4" />
+        <motion.div
+          animate={{ rotate: wheelRotation }}
+          transition={isSpinning ? { duration: 4.1, ease: [0.16, 0.86, 0.18, 1] } : { duration: 0 }}
+          className="absolute inset-0 rounded-full border-4 border-white shadow-2xl ring-4 ring-orange-200"
+        >
+          <div
+            className="absolute inset-0 overflow-hidden rounded-full bg-[radial-gradient(circle_at_center,#fff7ed_0%,#fed7aa_40%,#fdba74_82%,#fb923c_100%)]"
+            style={{ containerType: "inline-size" }}
+          >
+            {segments.map((segment) => (
+              <React.Fragment key={segment.value}>
+                <div className="absolute inset-0" style={{ ...gradientStyle(segment.startColor, segment.endColor, segment.isDepleted ? 0.2 : 1), clipPath: segmentPolygon(segment.startAngle, segment.endAngle, 50, 24) }} />
+                <SegmentLabel segment={segment} wheelTextSize={wheelTextSize} />
+              </React.Fragment>
+            ))}
+            <div className="absolute inset-0 rounded-full border-2 border-white/35" />
+            <div className="absolute inset-[12%] rounded-full border border-orange-100/40" />
+            <div className="absolute inset-[24%] rounded-full border border-white/20" />
+          </div>
+          <div className="absolute inset-[34%] z-30 flex items-center justify-center rounded-full border-3 border-white/90 bg-[radial-gradient(circle_at_top,#ffffff,#fff7ed_60%,#fed7aa)] shadow-2xl backdrop-blur-sm">
+            <Button
+              type="button"
+              onClick={onSpin}
+              disabled={isSpinning || segments.length === 0}
+              className="aspect-square w-[85%] max-w-36 min-w-[4.75rem] rounded-full bg-linear-to-br from-orange-500 to-orange-300 text-center text-sm font-bold leading-tight text-white shadow-lg hover:from-orange-500 hover:to-orange-300 md:w-36 md:min-w-0 md:text-lg"
+            >
+              {isSpinning ? "Spinning..." : "Spin the Wheel"}
+            </Button>
+          </div>
+        </motion.div>
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          {isSpinning && <div className="absolute inset-[-3%] animate-pulse rounded-full border border-orange-300/70" />}
         </div>
-        <div className="absolute inset-[34%] z-30 flex items-center justify-center rounded-full border-3 border-white/90 bg-[radial-gradient(circle_at_top,#ffffff,#fff7ed_60%,#fed7aa)] shadow-2xl backdrop-blur-sm">
-          <Button type="button" onClick={onSpin} disabled={isSpinning || segments.length === 0} className="h-28 w-28 rounded-full bg-linear-to-br from-orange-500 to-orange-300 text-center text-base font-bold leading-tight text-white shadow-lg hover:from-orange-500 hover:to-orange-300 md:h-36 md:w-36 md:text-lg">
-            {isSpinning ? "Spinning..." : "Spin the Wheel"}
-          </Button>
-        </div>
-      </motion.div>
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        {isSpinning && <div className="h-[600px] w-[600px] animate-pulse rounded-full border border-orange-300/70 md:h-[720px] md:w-[720px]" />}
+        {!isSpinning && previewPrize && (
+          <div className="absolute -bottom-4 left-1/2 max-w-[calc(100%-1rem)] -translate-x-1/2 rounded-full bg-white/95 px-4 py-2 text-center text-xs font-medium text-slate-700 shadow-lg sm:text-sm">
+            Latest result: {previewPrize}
+          </div>
+        )}
       </div>
-      {!isSpinning && previewPrize && <div className="absolute -bottom-4 rounded-full bg-white/95 px-5 py-2 text-sm font-medium text-slate-700 shadow-lg">Latest result: {previewPrize}</div>}
     </div>
   );
 }
