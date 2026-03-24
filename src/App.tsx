@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "./components/ui/alert";
+import { Badge } from "./components/ui/badge";
+import { Button } from "./components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./components/ui/card";
+import { Input } from "./components/ui/input";
+import { Label } from "./components/ui/label";
 import {
   ArrowLeft,
   Box,
@@ -368,32 +368,32 @@ function gradientStyle(startColor: string, endColor: string, opacity = 1): React
   return { backgroundImage: `linear-gradient(135deg, ${startColor}, ${endColor})`, opacity };
 }
 
-function getIconComponent(iconKey: PrizeIconKey) {
+function renderPrizeIcon(iconKey: PrizeIconKey, className: string) {
   switch (iconKey) {
     case "candy":
-      return Candy;
+      return <Candy className={className} />;
     case "cookie":
-      return Cookie;
+      return <Cookie className={className} />;
     case "sparkles":
-      return Sparkles;
+      return <Sparkles className={className} />;
     case "package":
-      return Package;
+      return <Package className={className} />;
     case "gift":
-      return Gift;
+      return <Gift className={className} />;
     case "circle":
-      return Circle;
+      return <Circle className={className} />;
     case "star":
-      return Star;
+      return <Star className={className} />;
     case "heart":
-      return Heart;
+      return <Heart className={className} />;
     case "diamond":
-      return Diamond;
+      return <Diamond className={className} />;
     case "box":
-      return Box;
+      return <Box className={className} />;
     case "dot":
-      return CircleDot;
+      return <CircleDot className={className} />;
     default:
-      return Gift;
+      return <Gift className={className} />;
   }
 }
 
@@ -407,11 +407,11 @@ function PrizeIllustration({
   iconOverrides: IconOverrides;
 }) {
   const meta = getPrizeMeta(prize, overrides);
-  const Icon = getIconComponent(iconOverrides[prize] ?? DEFAULT_ICON_OVERRIDES[prize] ?? "gift");
+  const iconKey = iconOverrides[prize] ?? DEFAULT_ICON_OVERRIDES[prize] ?? "gift";
   return (
     <div className="relative flex h-24 w-24 items-center justify-center rounded-full shadow-inner md:h-28 md:w-28" style={gradientStyle(meta.chipStart, meta.chipEnd)}>
       <div className="absolute inset-3 rounded-full border border-white/70" />
-      <Icon className="h-10 w-10 md:h-12 md:w-12" />
+      {renderPrizeIcon(iconKey, "h-10 w-10 md:h-12 md:w-12")}
     </div>
   );
 }
@@ -447,7 +447,7 @@ function ConfettiBurst({ show }: { show: boolean }) {
   const pieces = Array.from({ length: 24 }, (_, i) => i);
   const colors = ["#f97316", "#fde047", "#60a5fa", "#ec4899", "#16a34a", "#ffffff"];
   return (
-    <div className="pointer-events-none absolute inset-0 z-[60] overflow-hidden">
+    <div className="pointer-events-none absolute inset-0 z-60 overflow-hidden">
       {pieces.map((i) => {
         const left = 8 + ((i * 83) % 84);
         const delay = (i % 8) * 0.05;
@@ -519,21 +519,21 @@ function WheelVisual({
 }) {
   return (
     <div className="relative mx-auto flex w-full max-w-[760px] items-center justify-center">
-      <div className="absolute -top-4 z-40 h-0 w-0 border-l-[24px] border-r-[24px] border-b-[38px] border-l-transparent border-r-transparent border-b-orange-600 drop-shadow-lg" />
-      <motion.div animate={{ rotate: wheelRotation }} transition={isSpinning ? { duration: 4.1, ease: [0.16, 0.86, 0.18, 1] } : { duration: 0 }} className="relative h-[560px] w-[560px] rounded-full border-[16px] border-white shadow-2xl ring-[14px] ring-orange-200 md:h-[680px] md:w-[680px]">
-        <div className="absolute inset-0 overflow-hidden rounded-full bg-[radial-gradient(circle_at_center,_#fff7ed_0%,_#fed7aa_40%,_#fdba74_82%,_#fb923c_100%)]">
+      <div className="absolute -top-4 z-40 h-0 w-0 border-l-6 border-r-6 border-b-10 border-l-transparent border-r-transparent border-b-orange-600 drop-shadow-lg" />
+      <motion.div animate={{ rotate: wheelRotation }} transition={isSpinning ? { duration: 4.1, ease: [0.16, 0.86, 0.18, 1] } : { duration: 0 }} className="relative h-[560px] w-[560px] rounded-full border-4 border-white shadow-2xl ring-4 ring-orange-200 md:h-[680px] md:w-[680px]">
+        <div className="absolute inset-0 overflow-hidden rounded-full bg-[radial-gradient(circle_at_center,#fff7ed_0%,#fed7aa_40%,#fdba74_82%,#fb923c_100%)]">
           {segments.map((segment) => (
             <React.Fragment key={segment.value}>
               <div className="absolute inset-0" style={{ ...gradientStyle(segment.startColor, segment.endColor, segment.isDepleted ? 0.2 : 1), clipPath: segmentPolygon(segment.startAngle, segment.endAngle, 50, 24) }} />
               <SegmentLabel segment={segment} wheelTextSize={wheelTextSize} />
             </React.Fragment>
           ))}
-          <div className="absolute inset-0 rounded-full border-[8px] border-white/35" />
+          <div className="absolute inset-0 rounded-full border-2 border-white/35" />
           <div className="absolute inset-[12%] rounded-full border border-orange-100/40" />
           <div className="absolute inset-[24%] rounded-full border border-white/20" />
         </div>
-        <div className="absolute inset-[34%] z-30 flex items-center justify-center rounded-full border-[12px] border-white/90 bg-[radial-gradient(circle_at_top,_#ffffff,_#fff7ed_60%,_#fed7aa)] shadow-2xl backdrop-blur-sm">
-          <Button type="button" onClick={onSpin} disabled={isSpinning || segments.length === 0} className="h-28 w-28 rounded-full bg-gradient-to-br from-orange-500 to-orange-300 text-center text-base font-bold leading-tight text-white shadow-lg hover:from-orange-500 hover:to-orange-300 md:h-36 md:w-36 md:text-lg">
+        <div className="absolute inset-[34%] z-30 flex items-center justify-center rounded-full border-3 border-white/90 bg-[radial-gradient(circle_at_top,#ffffff,#fff7ed_60%,#fed7aa)] shadow-2xl backdrop-blur-sm">
+          <Button type="button" onClick={onSpin} disabled={isSpinning || segments.length === 0} className="h-28 w-28 rounded-full bg-linear-to-br from-orange-500 to-orange-300 text-center text-base font-bold leading-tight text-white shadow-lg hover:from-orange-500 hover:to-orange-300 md:h-36 md:w-36 md:text-lg">
             {isSpinning ? "Spinning..." : "Spin the Wheel"}
           </Button>
         </div>
@@ -653,8 +653,8 @@ function AdminOverlay({
 
   return (
     <AnimatePresence>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[70] flex items-center justify-center bg-black/35 p-4 backdrop-blur-sm">
-        <motion.div initial={{ opacity: 0, y: 14, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 8, scale: 0.98 }} className="max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/40 bg-white shadow-2xl">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-70 flex items-center justify-center bg-black/35 p-4 backdrop-blur-sm">
+        <motion.div initial={{ opacity: 0, y: 14, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 8, scale: 0.98 }} className="max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-4xl border border-white/40 bg-white shadow-2xl">
           <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-5">
             <div>
               <h2 className="flex items-center gap-2 text-2xl font-bold text-slate-900"><ShieldCheck className="h-6 w-6" /> Admin & Claim History</h2>
@@ -670,7 +670,7 @@ function AdminOverlay({
               <div className="mx-auto max-w-md space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="admin-password-popup">Administrator Password</Label>
-                  <Input id="admin-password-popup" type="password" className="h-12 rounded-xl bg-white" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") onUnlock(); }} placeholder="Enter password" />
+                  <Input id="admin-password-popup" type="password" className="h-12 rounded-xl bg-white" value={password} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)} onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => { if (e.key === "Enter") onUnlock(); }} placeholder="Enter password" />
                 </div>
                 <Button onClick={onUnlock} className="bg-linear-to-r from-orange-500 to-orange-300 text-white hover:from-orange-500 hover:to-orange-300"><LockKeyhole className="mr-2 h-4 w-4" /> Unlock Admin</Button>
                 {message && <Alert className="rounded-2xl border-orange-200 bg-orange-50 text-orange-900"><AlertDescription>{message}</AlertDescription></Alert>}
@@ -689,7 +689,7 @@ function AdminOverlay({
                   <div className="rounded-xl border bg-white/70 px-4 py-3">
                     <Label htmlFor="wheel-text-size">Wheel text size</Label>
                     <div className="mt-2 flex items-center gap-3">
-                      <Input id="wheel-text-size" type="range" min={10} max={22} step={1} value={wheelTextSize} onChange={(e) => onWheelTextSizeChange(Number(e.target.value))} />
+                      <Input id="wheel-text-size" type="range" min={10} max={22} step={1} value={wheelTextSize} onChange={(e: React.ChangeEvent<HTMLInputElement>) => onWheelTextSizeChange(Number(e.target.value))} />
                       <span className="min-w-[40px] text-sm font-medium">{wheelTextSize}px</span>
                     </div>
                   </div>
@@ -716,7 +716,7 @@ function AdminOverlay({
 
                 {activePanel === "icons" && <div className="space-y-3"><h3 className="text-lg font-semibold text-slate-900">Prize Icons</h3><div className="space-y-3">{PRIZES.map((prize) => { const iconValue = iconOverrides[prize.value] ?? DEFAULT_ICON_OVERRIDES[prize.value] ?? "gift"; return <div key={prize.value} className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 md:grid-cols-[1fr,220px] md:items-center"><div className="flex items-center gap-3"><PrizeIllustration prize={prize.value} overrides={colorOverrides} iconOverrides={iconOverrides} /><span className="font-medium text-slate-800">{prize.value}</span></div><select className="rounded-xl border px-3 py-2 text-sm" value={iconValue} onChange={(e) => onIconChange(prize.value, e.target.value as PrizeIconKey)}><option value="candy">Candy</option><option value="cookie">Cookie</option><option value="sparkles">Sparkles</option><option value="package">Package</option><option value="gift">Gift</option><option value="circle">Circle</option><option value="star">Star</option><option value="heart">Heart</option><option value="diamond">Diamond</option><option value="box">Box</option><option value="dot">Dot</option></select></div>; })}</div></div>}
 
-                {activePanel === "inventory" && <div className="space-y-3"><h3 className="text-lg font-semibold text-slate-900">Inventory Counts</h3><div className="space-y-3">{PRIZES.map((prize) => <div key={prize.value} className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 md:grid-cols-[1fr,160px] md:items-center"><div className="flex items-center gap-3"><span className="font-medium text-slate-800">{prize.value}</span></div><Input type="number" min={0} value={inventoryCounts[prize.value] ?? 0} onChange={(e) => onInventoryCountChange(prize.value, Number(e.target.value) || 0)} className="h-10 rounded-xl bg-white" /></div>)}</div><div className="flex flex-wrap gap-2"><Button onClick={onApplyInventoryCounts}>Apply Inventory Counts</Button><Button variant="destructive" onClick={onResetInventory}><RotateCcw className="mr-2 h-4 w-4" /> Reset Inventory</Button></div>{pendingAdminAction && <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4 text-orange-950"><p className="font-semibold">{pendingAdminAction.kind === "apply-inventory" ? "Confirm inventory changes" : "Confirm inventory reset"}</p><div className="mt-2 space-y-1 text-sm">{pendingAdminAction.details.map((detail, idx) => <p key={idx}>{detail}</p>)}</div><div className="mt-4 flex flex-wrap gap-2"><Button onClick={onConfirmPendingAction}>Confirm</Button><Button variant="outline" onClick={onCancelPendingAction}>Cancel</Button></div></div>}</div>}
+                {activePanel === "inventory" && <div className="space-y-3"><h3 className="text-lg font-semibold text-slate-900">Inventory Counts</h3><div className="space-y-3">{PRIZES.map((prize) => <div key={prize.value} className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 md:grid-cols-[1fr,160px] md:items-center"><div className="flex items-center gap-3"><span className="font-medium text-slate-800">{prize.value}</span></div><Input type="number" min={0} value={inventoryCounts[prize.value] ?? 0} onChange={(e: React.ChangeEvent<HTMLInputElement>) => onInventoryCountChange(prize.value, Number(e.target.value) || 0)} className="h-10 rounded-xl bg-white" /></div>)}</div><div className="flex flex-wrap gap-2"><Button onClick={onApplyInventoryCounts}>Apply Inventory Counts</Button><Button variant="destructive" onClick={onResetInventory}><RotateCcw className="mr-2 h-4 w-4" /> Reset Inventory</Button></div>{pendingAdminAction && <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4 text-orange-950"><p className="font-semibold">{pendingAdminAction.kind === "apply-inventory" ? "Confirm inventory changes" : "Confirm inventory reset"}</p><div className="mt-2 space-y-1 text-sm">{pendingAdminAction.details.map((detail, idx) => <p key={idx}>{detail}</p>)}</div><div className="mt-4 flex flex-wrap gap-2"><Button onClick={onConfirmPendingAction}>Confirm</Button><Button variant="outline" onClick={onCancelPendingAction}>Cancel</Button></div></div>}</div>}
               </div>
             )}
           </div>
@@ -727,7 +727,7 @@ function AdminOverlay({
 }
 
 export default function SCRCGiveawayRaffle() {
-  const [appState, setAppState] = useState<AppState>(makeDefaultState());
+  const [appState, setAppState] = useState<AppState>(() => loadState());
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [message, setMessage] = useState("");
@@ -750,16 +750,11 @@ export default function SCRCGiveawayRaffle() {
 
   useEffect(() => {
     runSanityChecks();
-    setAppState(loadState());
   }, []);
 
   useEffect(() => {
     saveState(appState);
   }, [appState]);
-
-  useEffect(() => {
-    setInventoryCounts(countsFromInventory(appState.inventory));
-  }, [appState.inventory]);
 
   useEffect(() => {
     return () => {
@@ -1038,6 +1033,7 @@ export default function SCRCGiveawayRaffle() {
           history: [ticket, ...prev.history],
         };
       });
+      setInventoryCounts(countsFromInventory(nextInventory));
       setResult(null);
       setShowResultOverlay(true);
       setMessage(`Applied inventory changes. ${pendingAdminAction.details.length} adjustment(s) recorded in admin history.`);
@@ -1069,6 +1065,7 @@ export default function SCRCGiveawayRaffle() {
         lastStubNumber: nextStub,
       };
     });
+    setInventoryCounts(countsFromInventory(DEFAULT_INVENTORY));
     setCurrentEntry(null);
     setCurrentView("entry");
     setResult(null);
@@ -1100,31 +1097,31 @@ export default function SCRCGiveawayRaffle() {
   };
 
   const removeClaim = (stubNumber: string) => {
-    setAppState((prev) => {
-      const record = prev.history.find((item) => item.stubNumber === stubNumber);
-      if (!record) return prev;
-      const nextHistory = prev.history.filter((item) => item.stubNumber !== stubNumber);
-      const nextClaims = { ...prev.claims };
-      const claimKey = Object.keys(nextClaims).find((key) => nextClaims[key].stubNumber === stubNumber);
-      if (claimKey) delete nextClaims[claimKey];
-      return { ...prev, history: nextHistory, claims: nextClaims, inventory: record.isAdminChange ? prev.inventory : shuffle([...prev.inventory, record.prize]) };
-    });
+    const record = appState.history.find((item) => item.stubNumber === stubNumber);
+    if (!record) return;
+    const nextHistory = appState.history.filter((item) => item.stubNumber !== stubNumber);
+    const nextClaims = { ...appState.claims };
+    const claimKey = Object.keys(nextClaims).find((key) => nextClaims[key].stubNumber === stubNumber);
+    if (claimKey) delete nextClaims[claimKey];
+    const nextInventory = record.isAdminChange ? appState.inventory : shuffle([...appState.inventory, record.prize]);
+    setAppState({ ...appState, history: nextHistory, claims: nextClaims, inventory: nextInventory });
+    setInventoryCounts(countsFromInventory(nextInventory));
   };
 
   const editPrize = (stubNumber: string, newPrize: string) => {
-    setAppState((prev) => {
-      const record = prev.history.find((item) => item.stubNumber === stubNumber);
-      if (!record || record.prize === newPrize || record.isAdminChange) return prev;
-      const nextHistory = prev.history.map((item) => (item.stubNumber === stubNumber ? { ...item, prize: newPrize } : item));
-      const nextClaims = { ...prev.claims };
-      Object.keys(nextClaims).forEach((key) => {
-        if (nextClaims[key].stubNumber === stubNumber) nextClaims[key] = { ...nextClaims[key], prize: newPrize };
-      });
-      const nextInventory = [...prev.inventory, record.prize];
-      const replacementIndex = nextInventory.findIndex((item) => item === newPrize);
-      if (replacementIndex >= 0) nextInventory.splice(replacementIndex, 1);
-      return { ...prev, history: nextHistory, claims: nextClaims, inventory: shuffle(nextInventory) };
+    const record = appState.history.find((item) => item.stubNumber === stubNumber);
+    if (!record || record.prize === newPrize || record.isAdminChange) return;
+    const nextHistory = appState.history.map((item) => (item.stubNumber === stubNumber ? { ...item, prize: newPrize } : item));
+    const nextClaims = { ...appState.claims };
+    Object.keys(nextClaims).forEach((key) => {
+      if (nextClaims[key].stubNumber === stubNumber) nextClaims[key] = { ...nextClaims[key], prize: newPrize };
     });
+    const nextInventory = [...appState.inventory, record.prize];
+    const replacementIndex = nextInventory.findIndex((item) => item === newPrize);
+    if (replacementIndex >= 0) nextInventory.splice(replacementIndex, 1);
+    const shuffledInventory = shuffle(nextInventory);
+    setAppState({ ...appState, history: nextHistory, claims: nextClaims, inventory: shuffledInventory });
+    setInventoryCounts(countsFromInventory(shuffledInventory));
   };
 
   const updatePrizeColor = (prize: string, field: keyof PrizeColorOverride, value: string) => {
@@ -1202,7 +1199,7 @@ export default function SCRCGiveawayRaffle() {
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                   <Button className="h-12 rounded-xl bg-linear-to-r from-orange-500 to-orange-300 px-8 text-base text-white hover:from-orange-500 hover:to-orange-300" onClick={goToWheelPage}>Proceed to Wheel</Button>
-                  <Button variant="outline" className="rounded-xl bg-white/70" onClick={() => setShowAdminOverlay(true)}><ShieldCheck className="mr-2 h-4 w-4" /> Admin & History</Button>
+                  <Button variant="outline" className="rounded-xl bg-white/70" onClick={() => { setInventoryCounts(countsFromInventory(appState.inventory)); setShowAdminOverlay(true); }}><ShieldCheck className="mr-2 h-4 w-4" /> Admin & History</Button>
                 </div>
                 {message && <Alert className="rounded-2xl border-orange-200 bg-orange-50 text-orange-900"><AlertDescription>{message}</AlertDescription></Alert>}
               </CardContent>
