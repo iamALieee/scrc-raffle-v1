@@ -546,16 +546,16 @@ function WheelVisual({
             <div className="absolute inset-[12%] rounded-full border border-orange-100/40" />
             <div className="absolute inset-[24%] rounded-full border border-white/20" />
           </div>
-          <div className="absolute inset-[34%] z-30 flex items-center justify-center rounded-full border-3 border-white/90 bg-[radial-gradient(circle_at_top,#ffffff,#fff7ed_60%,#fed7aa)] shadow-2xl backdrop-blur-sm">
-            <Button
-              type="button"
-              onClick={onSpin}
-              disabled={isSpinning || segments.length === 0}
-              className="aspect-square w-[85%] max-w-36 min-w-[4.75rem] rounded-full bg-linear-to-br from-orange-500 to-orange-300 text-center text-sm font-bold leading-tight text-white shadow-lg hover:from-orange-500 hover:to-orange-300 md:w-36 md:min-w-0 md:text-lg"
-            >
+          <button
+            type="button"
+            onClick={onSpin}
+            disabled={isSpinning || segments.length === 0}
+            className="absolute inset-[34%] z-30 flex cursor-pointer items-center justify-center rounded-full border-3 border-white/90 bg-[radial-gradient(circle_at_top,#ffffff,#fff7ed_60%,#fed7aa)] px-3 text-center shadow-2xl backdrop-blur-sm transition-[filter,transform] hover:brightness-[1.03] active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:brightness-100"
+          >
+            <span className="max-w-[92%] text-sm font-bold leading-tight text-orange-700 md:text-lg">
               {isSpinning ? "Spinning..." : "Spin the Wheel"}
-            </Button>
-          </div>
+            </span>
+          </button>
         </motion.div>
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           {isSpinning && <div className="absolute inset-[-3%] animate-pulse rounded-full border border-orange-300/70" />}
