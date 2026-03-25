@@ -176,7 +176,7 @@ const PRIZES: PrizeDef[] = [
   {
     label: "Candies",
     value: "Candies",
-    count: 200,
+    count: 150,
     startColor: "#f97316",
     endColor: "#fb923c",
     chipStart: "#ffedd5",
